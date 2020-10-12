@@ -1,0 +1,11 @@
+export SQLALCHEMY_DATABASE_URI='postgresql://kushalgc:kusu456@localhost/resonanceDB'
+export SECRET_KEY='chbcn2334@%#$^((hdbvdddsfg125256@3546&*'
+export REDIS_HOST='localhost'
+export REDIS_PORT=6379
+export REDIS_DB=1
+export API_KEY="bcbcnbhdet2536648gdhhh"
+export DEVELOPER_KEY=''
+export TWILIO_ACCOUNT_SID=''
+export TWILIO_AUTH_TOKEN=''
+export FLASK_APP=app.py
+sudo -E python3 app.py
