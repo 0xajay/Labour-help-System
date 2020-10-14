@@ -11,7 +11,8 @@ def get_login(req):
     email = req.get("email").lower()
     password = req.get('password')
     try:
-        user = User.objects.get(email=email)
+        user = User.objects(email__exact=email.lower()).first()
+        print(user)
         if user:
             if check_password_hash(user.password,password):
                 user = user.to_dict()

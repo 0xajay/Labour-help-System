@@ -12,7 +12,7 @@ def user_register(req):
     email = req.get('email')
     password = req.get('password')
     try:
-        user = User.objects(email=email).first()
+        user = User.objects(email=email.lower()).first()
         if user:
             return {"statusCode":406, "message":"email already exist"},406
         else:
