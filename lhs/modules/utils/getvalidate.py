@@ -1,26 +1,12 @@
-from resonance.conn.red import conn
-from resonance.modules.users.db.userdb import User
+from lhs.redis.connection import conn
+from lhs.modules.users.schemas.user import User
 
-def get_validatewithoutEmailVerified(ses_id,activity):
+def get_validate_permissions(ses_id,activity):
     user_session = conn.hgetall(ses_id)
-    if user_session[b'valid']== b'True':
-        user = User.query.filter_by(id=int(user_session[b'userid'])).first()
+    if user_session[b'valid'] == b'True':
+        user = User.objects.get(pk=user_session[b'userid'].decode('utf-8'))
         if user:
-            if set(activity) & set(user.activity):
-                return user
-            else:
-                return False
-        else:
-            return False
-    else:
-        return False
-
-def get_validatewithEmailVerified(ses_id,activity):
-    user_session = conn.hgetall(ses_id)
-    if user_session[b'valid']== b'True':
-        user = User.query.filter_by(id=int(user_session[b'userid']),verified=True).first()
-        if user:
-            if set(activity) & set(user.activity):
+            if user.permission == activity:
                 return user
             else:
                 return False
