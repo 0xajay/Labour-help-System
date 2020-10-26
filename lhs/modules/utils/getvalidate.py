@@ -6,7 +6,7 @@ def get_validate_permissions(ses_id,activity):
     if user_session[b'valid'] == b'True':
         user = User.objects.get(pk=user_session[b'userid'].decode('utf-8'))
         if user:
-            if user.permission == activity:
+            if user.permission in activity:
                 return user
             else:
                 return False

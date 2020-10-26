@@ -7,8 +7,8 @@ class Labour(Document):
     designation = StringField(required=True)
     phone = StringField(required=True)
     country_code = StringField(required=True)
-    temp_credentials = DictField(required=False)
-    device_added = BooleanField(required=True, default=False)
+    email = StringField(required=True)
+    temp_credentials = DictField(required=True)
     visibility = BooleanField(required=True, default=True)
     timestamp = DateTimeField(default=datetime.utcnow)
 

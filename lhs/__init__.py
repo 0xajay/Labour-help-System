@@ -23,6 +23,7 @@ from lhs.modules.labourers.routes import labourers
 
 app.register_blueprint(users,url_prefix='/api/v1/user') #registering user blueprint
 app.register_blueprint(labourers, url_prefix='/api/v1/labourers')
-# @app.route("/")
-# def index():
-#     return render_template("api.html")
+
+@app.route("/")
+def index():
+    return render_template("api.html")

@@ -4,7 +4,8 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token,get
 from lhs import jwt
 from lhs.modules.utils.getvalidate import get_validate_permissions
 from lhs.modules.labourers.functions.create_labour import create_labour
-from lhs.modules.labourers.functions.get_pending_labourers import get_pending_labourers
+from lhs.modules.labourers.functions.get_labour_by_id import get_labour_by_id
+from lhs.modules.labourers.functions.get_labourers import get_labourers
 import os
 
 labourers = Blueprint('labourers',__name__)
@@ -36,8 +37,10 @@ class Labour(Resource):
     labour_fields = api.model('Lobourer',{
             "name":fields.String,
             "designation":fields.String,
+            "email":fields.String,
             "phone":fields.String,
-            "country_code":fields.String
+            "country_code":fields.String,
+            "code":fields.String
         })
     @api.expect(labour_fields)
     @jwt_required
@@ -54,21 +57,32 @@ class Labour(Resource):
         except Exception as err:
             return {"statusCode":400,"message":str(err)},400
 
-
-@api.route("/devices/pending")
-class GetPendingLabourers(Resource):
+@api.route("/list")
+class GetAllLabourers(Resource):
     @jwt_required
     def get(self):
         try:
             current_user = get_jwt_identity()
-            user_data = get_validate_permissions(current_user,"MANAGER")
+            user_data = get_validate_permissions(current_user,["MANAGER","USER"])
             if user_data:
-                result = get_pending_labourers(user_data)
+                result = get_labourers(user_data)
                 return result
             else:
                 return {"statusCode":401, "message":"you are not authorized to use this route"},401
         except Exception as err:
             return {"statusCode":400,"message":str(err)},400
 
-# @api.route("/labourer/add/device/<labour_id>")
-# class AddDeviceToLabourer()
+@api.route("/labour/<labour_id>")
+class GetLabourById(Resource):
+    @jwt_required
+    def get(self, labour_id):
+        try:
+            current_user = get_jwt_identity()
+            user_data = get_validate_permissions(current_user,["MANAGER","USER"])
+            if user_data:
+                result = get_labour_by_id(labour_id,user_data)
+                return result
+            else:
+                return {"statusCode":401, "message":"you are not authorized to use this route"},401
+        except Exception as err:
+            return {"statusCode":400,"message":str(err)},400
