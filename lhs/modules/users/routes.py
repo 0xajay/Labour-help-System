@@ -5,6 +5,8 @@ from lhs import jwt
 from lhs.modules.utils.emailvalidate import email_validate
 from lhs.modules.users.functions.register import user_register
 from lhs.modules.users.functions.login import get_login
+from lhs.modules.utils.getvalidate import get_validate_permissions
+from lhs.modules.users.functions.get_my_cards import get_my_cards
 import os
 
 users = Blueprint('users',__name__)
@@ -65,3 +67,18 @@ class Login(Resource):
 
         except Exception as err:
             return {"statusCode":400,"message":str(err)},400
+
+@api.route("/get/cards")
+class GetMyCards(Resource):
+    @jwt_required
+    def get(self):
+        try:
+            current_user = get_jwt_identity()
+            user_data = get_validate_permissions(current_user,["USER"])
+            if user_data:
+                result = get_my_cards(user_data)
+                return result
+            else:
+                return {"statusCode":401, "message":"you are not authorized to use this route"},401
+        except Exception as err:
+            return {"statusCode":400, "message":str(err)},400
