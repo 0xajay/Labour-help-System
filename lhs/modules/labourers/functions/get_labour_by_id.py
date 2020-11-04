@@ -36,16 +36,31 @@ def get_labour_by_id(labour_id, user_data):
     except Exception as err:
         return {"statusCode":500, "message":str(err)},500
 
-
 def get_labour_range_by_id(labour_id,from_date,end_date,user_data):
     try:
         labour = Labour.objects(pk=labour_id,visibility=True).first()
         result = labour.to_dict()
         token = get_access_token(result["temp_credentials"]["refresh_token"])
         labour.temp_credentials = token
+        labour.save()
         header = {"Authorization": "Bearer "+token["access_token"]}
-        activity = requests.get('https://api.fitbit.com/1/user/'+result["temp_credentials"]["user_id"]+'/activities/date/'+from_date+'/'+end_date+'.json', headers=header).json()
+        activity = requests.get('https://api.fitbit.com/1/user/'+result["temp_credentials"]["user_id"]+'/activities/steps/date/'+from_date+'/'+end_date+'.json', headers=header).json()
+        print(activity)
         heart_rate = requests.get('https://api.fitbit.com/1/user/'+result["temp_credentials"]["user_id"]+'/activities/heart/date/'+from_date+'/'+end_date+'.json', headers=header).json()
+        print(heart_rate)
+        return {"statusCode":200, "message":"get labour data successful","data":{'activity':activity,'heart_rate':heart_rate}},200
+    except Exception as err:
+        return {"statusCode":500, "message":str(err)},500
+
+def get_labour_by_id_and_date(labour_id, date, user_data):
+    try:
+        labour = Labour.objects(pk=labour_id,visibility=True).first()
+        result = labour.to_dict()
+        token = get_access_token(result["temp_credentials"]["refresh_token"])
+        labour.temp_credentials = token
+        header = {"Authorization": "Bearer "+token["access_token"]}
+        activity = requests.get('https://api.fitbit.com/1/user/'+result["temp_credentials"]["user_id"]+'/activities/date/'+date+'.json', headers=header).json()
+        heart_rate = requests.get('https://api.fitbit.com/1/user/'+result["temp_credentials"]["user_id"]+'/activities/heart/date/'+date+'/1d.json', headers=header).json()
         labour.save()
         return {"statusCode":200, "message":"get labour data successful","data":{'activity':activity,'heart_rate':heart_rate}},200
     except Exception as err:
