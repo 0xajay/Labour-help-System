@@ -12,8 +12,6 @@ class User(Document):
     profile_pic = StringField(required=False)
     permission = StringField(required=True)
     visibility = BooleanField(required=True, default=True)
-    stripe_customer_id = StringField(required=True)
-    stripe_client_secret = StringField(required=True)
     timestamp = DateTimeField(default=datetime.utcnow)
 
     def to_dict(self):
@@ -26,8 +24,6 @@ class User(Document):
             "email":self.email,
             "profile_pic":self.profile_pic,
             "permission":self.permission,
-            "stripe_customer_id":self.stripe_customer_id,
-            "stripe_client_secret":self.stripe_client_secret,
             "visibility":self.visibility,
             "timestamp":str(self.timestamp)
         }

@@ -5,7 +5,6 @@ from lhs.redis.connection import conn
 import uuid
 from datetime import datetime
 from flask import session
-from lhs.modules.stripe.hubspoke.create_stripe_customer import create_stripe_customer
 
 def user_register(req):
     firstname = req.get('firstname')
@@ -18,8 +17,7 @@ def user_register(req):
             return {"statusCode":406, "message":"email already exist"},406
         else:
             password = generate_password_hash(password)
-            stripe_customer,stripe_client_secret = create_stripe_customer(email)
-            new_user = User(firstname=firstname,lastname=lastname,email=email.lower(),password=password, permission="USER",stripe_customer_id=stripe_customer,stripe_client_secret=stripe_client_secret).save()
+            new_user = User(firstname=firstname,lastname=lastname,email=email.lower(),password=password, permission="USER").save()
             result = new_user.to_dict()
             id = str(uuid.uuid1())
             session["id"] = id
