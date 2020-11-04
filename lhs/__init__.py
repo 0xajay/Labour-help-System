@@ -20,10 +20,12 @@ def teardown(Exception):
 
 from lhs.modules.users.routes import users
 from lhs.modules.labourers.routes import labourers
+from lhs.modules.payments.routes import payments
 
 app.register_blueprint(users,url_prefix='/api/v1/user') #registering user blueprint
 app.register_blueprint(labourers, url_prefix='/api/v1/labourers')
+app.register_blueprint(payments, url_prefix='/api/v1/payments')
 
-@app.route("/")
+@app.route("/api")
 def index():
     return render_template("api.html")

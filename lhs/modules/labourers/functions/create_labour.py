@@ -15,7 +15,7 @@ def get_access_token(code):
         'grant_type':'authorization_code',
         'code':code,
         'client_id':client_id,
-        'redirect_uri':'http://localhost/callback'
+        'redirect_uri':'http://localhost:3000/authenticate_device'
     }
 
     token = requests.post(url, data=payload, headers=header).json()
