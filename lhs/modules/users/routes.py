@@ -7,6 +7,7 @@ from lhs.modules.users.functions.register import user_register
 from lhs.modules.users.functions.login import get_login
 from lhs.modules.utils.getvalidate import get_validate_permissions
 from lhs.modules.users.functions.get_my_cards import get_my_cards
+from lhs.modules.users.functions.get_user_balance import get_user_balance
 import os
 
 users = Blueprint('users',__name__)
@@ -80,5 +81,20 @@ class GetMyCards(Resource):
                 return result
             else:
                 return {"statusCode":401, "message":"you are not authorized to use this route"},401
+        except Exception as err:
+            return {"statusCode":400, "message":str(err)},400
+
+@api.route("/user/balance")
+class GetUserBalance(Resource):
+    @jwt_required
+    def get(self):
+        try:
+            current_user = get_jwt_identity()
+            user_data = get_validate_permissions(current_user,["MANAGER"])
+            if user_data:
+                result = get_user_balance(user_data)
+                return result
+            else:
+                return {"statusCode":401, "message":"you are not authorzed to use this route"},401
         except Exception as err:
             return {"statusCode":400, "message":str(err)},400

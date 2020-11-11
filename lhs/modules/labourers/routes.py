@@ -6,6 +6,10 @@ from lhs.modules.utils.getvalidate import get_validate_permissions
 from lhs.modules.labourers.functions.create_labour import create_labour
 from lhs.modules.labourers.functions.get_labour_by_id import get_labour_by_id, get_labour_range_by_id,get_labour_by_id_and_date
 from lhs.modules.labourers.functions.get_labourers import get_labourers
+from lhs.modules.labourers.functions.labour_tip_history import labour_tip_history
+from lhs.modules.labourers.functions.payout_labour import payout_labour
+from lhs.modules.labourers.functions.clear_payments import clear_payments
+from lhs.modules.labourers.functions.get_transactions import get_transactions
 import os
 
 labourers = Blueprint('labourers',__name__)
@@ -48,7 +52,7 @@ class Labour(Resource):
         try:
             req = request.json
             current_user = get_jwt_identity()
-            user_data = get_validate_permissions(current_user,"MANAGER")
+            user_data = get_validate_permissions(current_user,["MANAGER"])
             if user_data:
                 result = create_labour(req, user_data)
                 return result
@@ -117,3 +121,70 @@ class GetLabourRangeById(Resource):
                 return {"statusCode":401, "message":"you are not authorized to use this route"},401
         except Exception as err:
             return {"statusCode":400,"message":str(err)},400
+
+@api.route("/labour/tip/history/<labour_id>")
+class GetLabourTipHistory(Resource):
+    @jwt_required
+    def get(self, labour_id):
+        try:
+            current_user = get_jwt_identity()
+            user_data = get_validate_permissions(current_user,["MANAGER","USER"])
+            if user_data:
+                result = labour_tip_history(labour_id, user_data)
+                return result
+            else:
+                return {"statusCode":401, "message":"you are not authorized to use this route"},401
+        except Exception as err:
+            return {"statusCode":400, "message":str(err)},400
+
+@api.route("/payout/labour")
+class PayoutLabour(Resource):
+    payout_fields = api.model('PayoutLabour',{
+        'amount':fields.Integer(required=True),
+        'card_id':fields.String(required=True),
+        'labour_id':fields.String(required=True)
+    })
+    @api.expect(payout_fields)
+    @jwt_required
+    def post(self):
+        try:
+            req = request.json
+            current_user = get_jwt_identity()
+            user_data = get_validate_permissions(current_user,["USER"])
+            if user_data:
+                result = payout_labour(req, user_data)
+                return result
+            else:
+                return {"statusCode":401, "message":"you are not authorized to use this route"},401
+        except Exception as err:
+            return {"statusCode":400, "message":str(err)},400
+
+@api.route("/clear/payments")
+class ClearPayments(Resource):
+    @jwt_required
+    def post(self):
+        try:
+            current_user = get_jwt_identity()
+            user_data = get_validate_permissions(current_user,["MANAGER"])
+            if user_data:
+                result = clear_payments(user_data)
+                return result
+            else:
+                return {"statusCode":401, "message":"you are not authorized to use this route"},401
+        except Exception as err:
+            return {"statusCode":400, "message":str(err)},400
+
+@api.route("/transaction/start_date/<start_date>/end_date/<end_date>")
+class GetTransactions(Resource):
+    @jwt_required
+    def get(self,start_date,end_date):
+        try:
+            current_user = get_jwt_identity()
+            user_data = get_validate_permissions(current_user,["FINANCE"])
+            if user_data:
+                result = get_transactions(start_date,end_date,user_data)
+                return result
+            else:
+                return {"statusCode":401, "message":"you are not authorized to use this route"},401
+        except Exception as err:
+            return {"statusCode":400, "message":str(err)},400
