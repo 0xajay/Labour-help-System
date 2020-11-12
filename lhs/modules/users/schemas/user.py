@@ -10,6 +10,7 @@ class User(Document):
     email = EmailField(required=True)
     password = StringField(required=True)
     profile_pic = StringField(required=False)
+    amount = IntField(required=False, default=0)
     permission = StringField(required=True)
     visibility = BooleanField(required=True, default=True)
     timestamp = DateTimeField(default=datetime.utcnow)
